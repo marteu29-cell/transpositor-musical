@@ -8,16 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-    
-    - name: Install dependencies
+
+    - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -30,17 +30,22 @@ jobs:
           zlib1g-dev libgstreamer1.0-dev \
           gstreamer1.0-plugins-base \
           gstreamer1.0-plugins-good \
-          openjdk-17-jdk unzip
-        pip install buildozer cython virtualenv
-    
-    - name: Build APK
+          openjdk-17-jdk unzip autoconf \
+          libtool pkg-config cmake
+
+    - name: Install Python dependencies
       run: |
-        buildozer android debug
-      timeout-minutes: 60
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
+        pip install --upgrade pip
+        pip install buildozer cython==0.29.33
+
+    - name: Setup Android SDK
+      run: |
+        buildozer android debug 2>&1 | tail -50
+      timeout-minutes: 90
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
       with:
-        name: transpositor-musical-apk
+        name: TranspositorMusical-APK
         path: bin/*.apk
         retention-days: 30
