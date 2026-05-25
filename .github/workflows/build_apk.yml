@@ -19,31 +19,34 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        sudo apt-get update
+        sudo apt-get update -y
         sudo apt-get install -y \
-          python3-pip build-essential git \
-          python3-dev ffmpeg \
+          build-essential git \
+          python3-dev \
           libsdl2-dev libsdl2-image-dev \
           libsdl2-mixer-dev libsdl2-ttf-dev \
-          libportmidi-dev libswscale-dev \
-          libavformat-dev libavcodec-dev \
-          zlib1g-dev libgstreamer1.0-dev \
-          gstreamer1.0-plugins-base \
-          gstreamer1.0-plugins-good \
-          openjdk-17-jdk unzip autoconf \
-          libtool pkg-config cmake
+          libportmidi-dev \
+          zlib1g-dev \
+          openjdk-17-jdk \
+          unzip \
+          autoconf \
+          libtool \
+          pkg-config \
+          cmake \
+          libffi-dev \
+          libssl-dev
 
     - name: Install Python dependencies
       run: |
-        pip install --upgrade pip
+        pip install --upgrade pip setuptools
         pip install buildozer cython==0.29.33
 
-    - name: Setup Android SDK
+    - name: Build APK
       run: |
-        buildozer android debug 2>&1 | tail -50
+        yes | buildozer android debug 2>&1
       timeout-minutes: 90
 
-    - name: Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: TranspositorMusical-APK
